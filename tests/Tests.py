@@ -1,10 +1,11 @@
 import os, sys
+import unittest
 
 currentdir = os.path.dirname(os.path.realpath(__file__))
 parentdir = os.path.dirname(currentdir)
 sys.path.append(parentdir)
 
-import unittest
+
 from hospital.Hospital import Hospital
 from hospital.Hospital import Patients
 from hospital.Hospital import (
