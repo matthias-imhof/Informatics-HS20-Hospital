@@ -2,8 +2,16 @@ from abc import ABC, abstractmethod
 
 class Hospital:
 	def __init__(self, HospitalName, Employees):
+		if not HospitalName or not Employees:
+			raise Warning('No Parameters were given')
 		self._Hospitalname = HospitalName
-		self._employees = Employees
+		try:
+			if type(Employees) != list:
+				self._employees = [Employees]
+			else:
+				self._employees = Employees
+		except:
+			raise Warning('Not given in a list')
 
 	def find_doctor(self,patient):
 		for i in self._employees:
@@ -39,16 +47,16 @@ class Hospital:
 					self._employees.append(i)
 			return 'Successfully added the list of the following employees: {}'.format(employee)
 		else:
-			raise Warning('Not a valid Employee for this Hospital')
+			raise Warning('Object is not a valid object of Employee')
 			
 	def rem_emp(self, employee):
 		if isinstance(employee, Employees):
-			for idx,i in enumerate(self._employees):
+			for i in self._employees:
 				if i == employee:
 					self._employees.remove(employee)
 					return 'Successfully removed {} the employee from the {} Hospital'.format(employee,self._Hospitalname)
 		else:
-			raise Warning('Not a valid Employee for this Hospital')
+			raise Warning('Not a valid Employee of this Hospital')
 		
 class Patients:
 	def __init__(self, name, age, problem):
@@ -74,7 +82,7 @@ class Employees(ABC):
 		return 'The: {} name is: {} {}'.format(type(self).__name__, self._firstname, self._lastname)
 	
 	def __repr__(self):
-		return '{} {} {}'.format(type(self).__name__, self._firstname, self._lastname)
+		return '{} {} {} {} {} {}'.format(type(self).__name__, self._firstname, self._lastname, self.salary)
 	
 	def __eq__(self, other):
 		if not isinstance(other, Employees):
@@ -94,6 +102,9 @@ class Doctors(Employees,ABC):
 		if not isinstance(other, Patients):
 			raise Warning('There is no patient')
 		other._problem = ''
+		
+	def __repr__(self):
+		return '{} {} {} {} {} {}'.format(type(self).__name__, self._firstname, self._lastname, self.salary, self._title, self.can_treat)
 	
 	def __eq__(self, other):
 		if not isinstance(other, Doctors):
