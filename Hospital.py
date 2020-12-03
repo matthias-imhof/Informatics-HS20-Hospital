@@ -1,22 +1,22 @@
 from abc import ABC, abstractmethod
 
 class Hospital:
-	def __init__(self, HospitalName, Employees):
-		if not HospitalName or not Employees:
+	def __init__(self, HospitalName, Employee):
+		if not HospitalName or not Employee:
 			raise Warning('No Parameters were given')
 		self._Hospitalname = HospitalName
 		try:
-			if type(Employees) != list:
-				self._employees = [Employees]
+			if type(Employee) != list:
+				self._Employee = [Employee]
 			else:
-				self._employees = Employees
+				self._Employee = Employee
 		except:
 			raise Warning('Not given in a list')
 
 	def find_doctor(self,patient):
 		result = None
-		for i in self._employees:
-			if isinstance(i, Doctors):
+		for i in self._Employee:
+			if isinstance(i, Doctor):
 				if patient._problem.lower() == i.can_treat.lower():
 					temp = patient._problem
 					i.treat(patient)
@@ -31,47 +31,47 @@ class Hospital:
 	
 	def list_all_doctors(self):
 		res = []
-		for i in self._employees:
-			if isinstance(i, Doctors):
+		for i in self._Employee:
+			if isinstance(i, Doctor):
 				res.append(type(i).__name__)
 		return res
 	
 	def list_all_non_doctors(self):
 		res = []
-		for i in self._employees:
-			if not isinstance(i, Doctors):
+		for i in self._Employee:
+			if not isinstance(i, Doctor):
 				res.append(type(i).__name__)
 		return res
 	
 	def add_emp(self, employee):
-		if isinstance(employee, Employees):
-			self._employees.append(employee)
+		if isinstance(employee, Employee):
+			self._Employee.append(employee)
 			return 'Successfully added the following employee: {}'.format(employee)
 		elif isinstance(employee, list):
 			for i in employee:
-				if isinstance(i, Employees):
-					self._employees.append(i)
-			return 'Successfully added the list of the following employees: {}'.format(employee)
+				if isinstance(i, Employee):
+					self._Employee.append(i)
+			return 'Successfully added the list of the following Employee: {}'.format(employee)
 		else:
 			raise Warning('Object is not a valid object of Employee')
 			
 	def rem_emp(self, employee):
-		if isinstance(employee, Employees):
-			for i in self._employees:
+		if isinstance(employee, Employee):
+			for i in self._Employee:
 				if i == employee:
-					self._employees.remove(employee)
+					self._Employee.remove(employee)
 					return 'Successfully removed {} the employee from the {} Hospital'.format(employee,self._Hospitalname)
 		else:
 			raise Warning('Not a valid Employee of this Hospital')
 		
-class Patients:
+class Patient:
 	def __init__(self, name, age, problem):
 		self._firstname = name[:name.find(' ')].lower()
 		self._lastname = name[name.find(' ')+1:].lower()
 		self._age = age
 		self._problem = problem
 
-class Employees(ABC):
+class Employee(ABC):
 	
 	default_salary = 70000
 	
@@ -79,7 +79,7 @@ class Employees(ABC):
 		self._firstname = name[:name.find(' ')].lower()
 		self._lastname = name[name.find(' ')+1:].lower()
 		self._age = age
-		self.salary = Employees.default_salary
+		self.salary = Employee.default_salary
 	
 	def _salary(self):
 		return str(self.salary) + ' CHF'
@@ -91,11 +91,11 @@ class Employees(ABC):
 		return '{} {} {} {} {} {}'.format(type(self).__name__, self._firstname, self._lastname, self.salary)
 	
 	def __eq__(self, other):
-		if not isinstance(other, Employees):
+		if not isinstance(other, Employee):
 			raise Warning('other is not an Employee')
 		return self._firstname == other._firstname and self._lastname == other._lastname and self._age == other._age and self._salary == other._salary 
 
-class Doctors(Employees,ABC):
+class Doctor(Employee,ABC):
 	def __init__(self, name, age, title):
 		super().__init__(name, age)
 		self._title = title
@@ -105,7 +105,7 @@ class Doctors(Employees,ABC):
 		return 'The: {} name is: {} {} and has the following titles: {}'.format(type(self).__name__, self._firstname, self._lastname, self._title)
 	
 	def treat(self, other):
-		if not isinstance(other, Patients):
+		if not isinstance(other, Patient):
 			raise Warning('There is no patient')
 		other._problem = ''
 		
@@ -113,38 +113,38 @@ class Doctors(Employees,ABC):
 		return '{} {} {} {} {} {}'.format(type(self).__name__, self._firstname, self._lastname, self.salary, self._title, self.can_treat)
 	
 	def __eq__(self, other):
-		if not isinstance(other, Doctors):
+		if not isinstance(other, Doctor):
 			return False
 		return self._firstname == other._firstname and self._lastname == other._lastname and self._age == other._age and self.salary == other.salary and self._title == other._title and self.can_treat == other.can_treat
 
-class CoronaSpecialist(Doctors):
+class CoronaSpecialist(Doctor):
 	def __init__(self, name, age, title):
 		super().__init__(name, age, title)
 		self.can_treat = 'corona'
 
-class FluSpecialist(Doctors):
+class FluSpecialist(Doctor):
 	def __init__(self, name, age, title):
 		super().__init__(name, age, title)
 		self.can_treat = 'flu'
 
-class Surgeon(Doctors):
+class Surgeon(Doctor):
 	def __init__(self, name, age, title):
 		super().__init__(name, age, title)
 		self.can_treat = 'tumor'
 
-class Ophtalmologist(Doctors):
+class Ophtalmologist(Doctor):
 	def __init__(self, name, age, title):
 		super().__init__(name, age, title)
 		self.can_treat = 'Ophtalmologist'
 
-class Administration(Employees):
+class Administration(Employee):
 	def _breaks(self):
 		self._has_often_breaks = True
 
-class Janitor(Employees):
+class Janitor(Employee):
 	pass
 
-class Administrator(Employees):
+class Administrator(Employee):
 	pass
 
 if __name__ == '__main__':
@@ -171,8 +171,8 @@ if __name__ == '__main__':
 	print(h2.list_all_doctors())
 	print()
 	
-	patient0 = Patients('Max Muster', 60, 'corona')
-	patient_gandalf = Patients('Wizzard Gandalf', 30000, 'weed overdose')
+	patient0 = Patient('Max Muster', 60, 'corona')
+	patient_gandalf = Patient('Wizzard Gandalf', 30000, 'weed overdose')
 	
 	print(patient0._problem)
 	print(h1.find_doctor(patient0))
