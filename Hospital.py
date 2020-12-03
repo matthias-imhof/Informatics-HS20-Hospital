@@ -14,15 +14,21 @@ class Hospital:
 			raise Warning('Not given in a list')
 
 	def find_doctor(self,patient):
+		result = None
 		for i in self._employees:
 			if isinstance(i, Doctors):
 				if patient._problem.lower() == i.can_treat.lower():
 					temp = patient._problem
 					i.treat(patient)
-					return 'Patient\'s problem: {} could be treated and the patient: {} {} is healthy again :)'.format(temp, patient._firstname,patient._lastname)
-		if len(patient._problem) > 0:
-			return 'Patient: {} {} couldn\'t be treated as there is no doctor in the {} hospital to treat: {}'.format(patient._firstname, patient._lastname, self._Hospitalname, patient._problem)
-		
+					result = 'Patient\'s problem: {} could be treated and the patient: {} {} is healthy again :)'.format(temp, patient._firstname,patient._lastname)
+					break
+		if result == None:
+			if len(patient._problem) > 0:
+				result = 'Patient: {} {} couldn\'t be treated as there is no doctor in the {} hospital to treat: {}'.format(patient._firstname, patient._lastname, self._Hospitalname, patient._problem)
+			else:
+				result = 'Patient: {} {} couldn\'t be treated as the problem is invalid'.format(patient._firstname, patient._lastname)
+		return result
+	
 	def list_all_doctors(self):
 		res = []
 		for i in self._employees:
