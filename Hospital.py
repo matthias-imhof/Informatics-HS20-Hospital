@@ -28,7 +28,28 @@ class Hospital:
 			if not isinstance(i, Doctors):
 				res.append(type(i).__name__)
 		return res
-				
+	
+	def add_emp(self, employee):
+		if isinstance(employee, Employees):
+			self._employees.append(employee)
+			return 'Successfully added the following employee: {}'.format(employee)
+		elif isinstance(employee, list):
+			for i in employee:
+				if isinstance(i, Employees):
+					self._employees.append(i)
+			return 'Successfully added the list of the following employees: {}'.format(employee)
+		else:
+			raise Warning('Not a valid Employee for this Hospital')
+			
+	def rem_emp(self, employee):
+		if isinstance(employee, Employees):
+			for idx,i in enumerate(self._employees):
+				if i == employee:
+					self._employees.remove(employee)
+					return 'Successfully removed {} the employee from the {} Hospital'.format(employee,self._Hospitalname)
+		else:
+			raise Warning('Not a valid Employee for this Hospital')
+		
 class Patients:
 	def __init__(self, name, age, problem):
 		self._firstname = name[:name.find(' ')].lower()
@@ -48,6 +69,17 @@ class Employees(ABC):
 	
 	def _salary(self):
 		return str(self.salary) + ' CHF'
+	
+	def _works(self):
+		return 'The: {} name is: {} {}'.format(type(self).__name__, self._firstname, self._lastname)
+	
+	def __repr__(self):
+		return '{} {} {}'.format(type(self).__name__, self._firstname, self._lastname)
+	
+	def __eq__(self, other):
+		if not isinstance(other, Employees):
+			raise Warning('other is not an Employee')
+		return self._firstname == other._firstname and self._lastname == other._lastname and self._age == other._age and self._salary == other._salary 
 
 class Doctors(Employees,ABC):
 	def __init__(self, name, age, title):
@@ -62,6 +94,11 @@ class Doctors(Employees,ABC):
 		if not isinstance(other, Patients):
 			raise Warning('There is no patient')
 		other._problem = ''
+	
+	def __eq__(self, other):
+		if not isinstance(other, Doctors):
+			return False
+		return self._firstname == other._firstname and self._lastname == other._lastname and self._age == other._age and self.salary == other.salary and self._title == other._title and self.can_treat == other.can_treat
 
 class CoronaSpecialist(Doctors):
 	def __init__(self, name, age, title):
@@ -102,9 +139,20 @@ if __name__ == '__main__':
 		Administration('Matthias5 Imhof5', 24),
 		Janitor('Matthias6 Imhof6', 24)
 	]
+	emp2 = [
+		CoronaSpecialist('Matthias Imhof', 24, 'Dr. Dr. PHD'),
+		Administration('Matthias5 Imhof5', 24),
+		Janitor('Matthias6 Imhof6', 24)
+	]
 	
 	h1 = Hospital('Weid',emp)
-	h2 = Hospital('Unispital Zurich',emp)
+	h2 = Hospital('Unispital Zurich',emp2)
+	
+	print(h2.add_emp([Ophtalmologist('Matthias4 Imhof4', 24, 'Dr. Dr. PHD'), FluSpecialist('Matthias2 Imhof2', 24, 'Dr. Dr. PHD')]))
+	print(h2.list_all_doctors())
+	print(h2.rem_emp(Ophtalmologist('Matthias4 Imhof4', 24, 'Dr. Dr. PHD')))
+	print(h2.list_all_doctors())
+	print()
 	
 	patient0 = Patients('Max Muster', 60, 'corona')
 	patient_gandalf = Patients('Wizzard Gandalf', 30000, 'weed overdose')
