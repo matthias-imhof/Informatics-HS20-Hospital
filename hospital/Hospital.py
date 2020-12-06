@@ -45,19 +45,19 @@ class Hospital:
 		return res
 	
 	def add_emp(self, employee):
-		if isinstance(employee, Employees):
+		if isinstance(employee, Employee):
 			self._employees.append(employee)
 			return 'Successfully added the following employee: {}'.format(employee)
 		elif isinstance(employee, list):
 			for i in employee:
-				if isinstance(i, Employees):
+				if isinstance(i, Employee):
 					self._employees.append(i)
 			return 'Successfully added the list of the following employees: {}'.format(employee)
 		else:
 			raise Warning('Object is not a valid object of Employee')
 			
 	def rem_emp(self, employee):
-		if isinstance(employee, Employees):
+		if isinstance(employee, Employee):
 			for i in self._employees:
 				if i == employee:
 					self._employees.remove(employee)
@@ -79,15 +79,18 @@ class Patient:
 		except:
 			raise Warning('Not given in a list')
 
-class Employees(ABC):
+class Employee(ABC):
 	
 	default_salary = 70000
+	__id = 0
 	
 	def __init__(self, name, age):
 		self._firstname = name[:name.find(' ')].lower()
 		self._lastname = name[name.find(' ')+1:].lower()
 		self._age = age
-		self.salary = Employees.default_salary
+		self.salary = Employee.default_salary
+		self.__id = Employee.__id
+		Employee.__id += 1
 	
 	def _salary(self):
 		return str(self.salary) + ' CHF'
@@ -96,14 +99,14 @@ class Employees(ABC):
 		return 'The: {} name is: {} {}'.format(type(self).__name__, self._firstname, self._lastname)
 	
 	def __repr__(self):
-		return '{} {} {} {} {} {}'.format(type(self).__name__, self._firstname, self._lastname, self.salary)
+		return '{} {} {} {}'.format(type(self).__name__, self._firstname, self._lastname, self.salary)
 	
 	def __eq__(self, other):
-		if not isinstance(other, Employees):
+		if not isinstance(other, Employee):
 			raise Warning('other is not an Employee')
 		return self._firstname == other._firstname and self._lastname == other._lastname and self._age == other._age and self._salary == other._salary 
 
-class Doctor(Employees,ABC):
+class Doctor(Employee,ABC):
 	def __init__(self, name, age, title):
 		super().__init__(name, age)
 		self._title = title
@@ -112,13 +115,12 @@ class Doctor(Employees,ABC):
 	def _works(self):
 		return 'The: {} name is: {} {} and has the following titles: {}'.format(type(self).__name__, self._firstname, self._lastname, self._title)
 	
-	def treat(self, other,problem):
-		if not isinstance(other, Patient):
-			raise Warning('There is no patient')
-		other._problem.remove(problem)
+	@abstractmethod
+	def treat(self, other, problem):
+		pass
 		
 	def __repr__(self):
-		return '{} {} {} {} {} {}'.format(type(self).__name__, self._firstname, self._lastname, self.salary, self._title, self.can_treat)
+		return super().__repr__() + ' {} {}'.format(self._title, self.can_treat)
 	
 	def __eq__(self, other):
 		if not isinstance(other, Doctor):
@@ -129,30 +131,54 @@ class CoronaSpecialist(Doctor):
 	def __init__(self, name, age, title):
 		super().__init__(name, age, title)
 		self.can_treat = 'corona'
+		
+	def treat(self, other,problem):
+		if not isinstance(other, Patient):
+			raise Warning('There is no patient')
+		other._problem.remove(problem)
+		print('{} {} {} removed {} {} {}'.format(type(self).__name__, self._firstname, self._lastname, other._firstname, other._lastname, problem))
 
 class FluSpecialist(Doctor):
 	def __init__(self, name, age, title):
 		super().__init__(name, age, title)
 		self.can_treat = 'flu'
+	
+	def treat(self, other,problem):
+		if not isinstance(other, Patient):
+			raise Warning('There is no patient')
+		other._problem.remove(problem)
+		print('{} {} {} removed {} {} {}'.format(type(self).__name__, self._firstname, self._lastname, other._firstname, other._lastname, problem))
 
 class Surgeon(Doctor):
 	def __init__(self, name, age, title):
 		super().__init__(name, age, title)
 		self.can_treat = 'tumor'
+		
+	def treat(self, other,problem):
+		if not isinstance(other, Patient):
+			raise Warning('There is no patient')
+		other._problem.remove(problem)
+		print('{} {} {} removed {} {} {}'.format(type(self).__name__, self._firstname, self._lastname, other._firstname, other._lastname, problem))
 
 class Ophtalmologist(Doctor):
 	def __init__(self, name, age, title):
 		super().__init__(name, age, title)
 		self.can_treat = 'Ophtalmologist'
+	
+	def treat(self, other,problem):
+		if not isinstance(other, Patient):
+			raise Warning('There is no patient')
+		other._problem.remove(problem)
+		print('{} {} {} removed {} {} {}'.format(type(self).__name__, self._firstname, self._lastname, other._firstname, other._lastname, problem))
 
-class Administration(Employees):
+class Administration(Employee):
 	def _breaks(self):
 		self._has_often_breaks = True
 
-class Janitor(Employees):
+class Janitor(Employee):
 	pass
 
-class Administrator(Employees):
+class Administrator(Employee):
 	pass
 
 if __name__ == '__main__':
@@ -195,6 +221,7 @@ if __name__ == '__main__':
 	print(h1.list_all_non_doctors())
 	
 	print(emp[1]._works())
+	
 	
 	
 	
