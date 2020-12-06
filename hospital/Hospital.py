@@ -104,7 +104,7 @@ class Employee(ABC):
 	def __eq__(self, other):
 		if not isinstance(other, Employee):
 			raise Warning('other is not an Employee')
-		return self._firstname == other._firstname and self._lastname == other._lastname and self._age == other._age and self._salary == other._salary 
+		return self.__id == other.__id and self._firstname == other._firstname and self._lastname == other._lastname and self._age == other._age and self._salary == other._salary 
 
 class Doctor(Employee,ABC):
 	def __init__(self, name, age, title):
